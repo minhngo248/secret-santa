@@ -23,7 +23,7 @@ function getUsers() {
     });
 }
 
-function addUser(name, mail) {
+function addUser(name, mail, items) {
 
     // Validation: name is required
     if (!name) {
@@ -38,9 +38,16 @@ function addUser(name, mail) {
         })
     }
 
+    if (items.length === 0) {
+        return new Promise((resolve, reject) => {
+            reject("You haven't added any items.");
+        })
+    }
+
     const user = {
         name: name,
-        mail: mail
+        mail: mail,
+        items: items
     }
 
     return new Promise((resolve, reject) => {
