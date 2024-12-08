@@ -1,13 +1,24 @@
 import React, { useState, useEffect } from "react";
-import { getUsers } from "/src/services/userService.js";
+import { collection, onSnapshot } from "firebase/firestore";
+import {db} from "../../config/firebaseConfig.js";
 
 const ListUsers = () => {
     const [users, setUsers] = useState([]);
 
     useEffect(() => {
-        getUsers()
-            .then((data) => setUsers(data))
-            .catch((error) => console.error("Error fetching users data:", error));
+        const usersCollectionRef = collection(db, "users");
+
+        // Set up a real-time listener
+        const unsubscribe = onSnapshot(usersCollectionRef, (snapshot) => {
+            const userList = snapshot.docs.map((doc) => ({
+                id: doc.id,
+                ...doc.data(),
+            }));
+            setUsers(userList);
+        });
+
+        // Cleanup listener on component unmount
+        return () => unsubscribe();
     }, []);
 
     const usersList = (

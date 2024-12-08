@@ -1,5 +1,4 @@
-import { doc, collection, query, orderBy, where,
-    getDocs, getDoc, deleteDoc, addDoc, updateDoc } from 'firebase/firestore';
+import { collection, query, getDocs, addDoc } from 'firebase/firestore';
 import { db } from '../config/firebaseConfig';
 
 function getUsers() {
@@ -24,26 +23,30 @@ function getUsers() {
     });
 }
 
-function addUser(user) {
-    // Validation: user is required
-    if (!user) {
-        return new Promise((resolve, reject) => {
-            reject('Validation failed: user is required');
-        });
-    }
+function addUser(name, mail) {
 
     // Validation: name is required
-    if (!user.name) {
+    if (!name) {
         return new Promise((resolve, reject) => {
             reject('Validation failed: name is required');
         });
     }
 
+    if (!mail) {
+        return new Promise((resolve, reject) => {
+            reject('Validation failed: mail is required');
+        })
+    }
+
+    const user = {
+        name: name,
+        mail: mail
+    }
+
     return new Promise((resolve, reject) => {
         addDoc(collection(db, 'users'), user)
             .then((docRef) => {
-                resolve(docRef.id);
-                console.log('Document successfully added!');
+                resolve(user.name);
             })
             .catch(err => {
                 reject(err);
