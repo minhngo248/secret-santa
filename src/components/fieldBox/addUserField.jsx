@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import {addUser} from "../../services/userService.js";
 
 const AddUserField = () => {
     const [formData, setFormData] = useState({
@@ -13,8 +14,16 @@ const AddUserField = () => {
 
     const handleSubmit = (e) => {
         e.preventDefault();
-        console.log("Form Data:", formData);
         // You can add your logic here, e.g., sending data to a server
+        addUser(formData.name, formData.mail)
+            .then(r => {
+                alert("User " + r + " added successfully");
+                setFormData({
+                    name: "",
+                    mail: "",
+                });
+            })
+            .catch(e => alert(e));
     };
 
     return (
