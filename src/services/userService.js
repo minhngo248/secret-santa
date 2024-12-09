@@ -86,7 +86,7 @@ async function addUser(name, mail) {
     });
 }
 
-async function updateUser(name, newItems) {
+async function updateUser(name, newItems, messageForSanta) {
     // Validate inputs
     if (!name) {
         return Promise.reject("Name is required to find the user.");
@@ -100,14 +100,15 @@ async function updateUser(name, newItems) {
         return Promise.reject(`No user found with the name "${name}".`);
     }
 
-    if (newItems.length === 0) {
-        return Promise.reject("You must provide at least one item.");
+    const updatedData = {
+    };
+
+    if (newItems.length > 0) {
+        updatedData.items = newItems;
     }
 
-    for (const item of newItems) {
-        if (!item.item) {
-            return Promise.reject("Found an item with an empty item name.");
-        }
+    if (messageForSanta) {
+        updatedData.message = messageForSanta;
     }
 
     const userDoc = querySnapshot.docs[0]; // Get the first document
@@ -115,9 +116,7 @@ async function updateUser(name, newItems) {
 
     return new Promise(async (resolve, reject) => {
             // Update the user's mail and items
-            updateDoc(userRef, {
-                items: newItems,
-            })
+            updateDoc(userRef, updatedData)
                 .then(() => resolve())
                 .catch(err => reject(err));
     });

@@ -5,6 +5,7 @@ import PropTypes from "prop-types";
 const AddItemField = (props) => {
 
     const [extraFields, setExtraFields] = useState([]); // List of additional fields
+    const [messageToSanta, setMessageToSanta] = useState(""); // State for the message to Santa
 
     const handleExtraFieldChange = (index, field, value) => {
         const updatedFields = [...extraFields];
@@ -31,12 +32,13 @@ const AddItemField = (props) => {
             return; // Stop submission if the user clicks "Cancel"
         }
 
-        updateUser(props.currentUser.name, extraFields)
-            .then(r => {
+        updateUser(props.currentUser.name, extraFields, messageToSanta)
+            .then(() => {
                 setExtraFields([]); // Reset extra fields after submission
+                setMessageToSanta(""); // Clear message to Santa
                 alert("Add đồ thành công");
             })
-            .catch(e => alert(e));
+            .catch((e) => alert(e));
     };
 
     return (
@@ -56,6 +58,27 @@ const AddItemField = (props) => {
 
             <h2>Wish List</h2>
             <form onSubmit={handleSubmit}>
+                {/* Message to Santa */}
+                <div style={{ marginBottom: "20px", marginLeft: "8px", marginRight: "12px" }}>
+                    <label htmlFor="messageToSanta" style={{ display: "block", marginBottom: "8px" }}>
+                        Lời nhắn cho Santa:
+                    </label>
+                    <textarea
+                        id="messageToSanta"
+                        placeholder="Lời yêu thương cho Santa"
+                        value={messageToSanta}
+                        onChange={(e) => setMessageToSanta(e.target.value)}
+                        style={{
+                            width: "100%",
+                            padding: "10px",
+                            borderRadius: "4px",
+                            border: "1px solid #ccc",
+                            resize: "none",
+                            minHeight: "50px",
+                        }}
+                    />
+                </div>
+
                 {/* Render additional fields */}
                 {extraFields.map((field, index) => (
                     <div key={index} style={{ display: "flex", marginBottom: "10px", gap: "10px" }}>
@@ -90,6 +113,7 @@ const AddItemField = (props) => {
                         />
                     </div>
                 ))}
+
                 {/* Add and Delete buttons */}
                 <div style={{ display: "flex", gap: "10px", marginBottom: "10px" }}>
                     <button

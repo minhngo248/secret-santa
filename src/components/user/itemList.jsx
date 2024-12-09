@@ -4,21 +4,30 @@ import { collection, query, where, onSnapshot } from "firebase/firestore";
 
 const ItemList = (props) => {
     const [items, setItems] = useState([]);
+    const [messageToSanta, setMessageToSanta] = useState(""); // State for the message to Santa
 
     useEffect(() => {
         if (props.currentUser) {
             const usersRef = collection(db, "users");
             const q = query(usersRef, where("name", "==", props.currentUser.name));
 
-            const unsubscribe = onSnapshot(q, (querySnapshot) => {
-                let userItems = [];
-                querySnapshot.forEach((doc) => {
-                    userItems = doc.data().items; // Assuming each user has a single document with an items array
-                });
-                setItems(userItems);
-            }, (error) => {
-                console.error('Error fetching user items: ', error);
-            });
+            const unsubscribe = onSnapshot(
+                q,
+                (querySnapshot) => {
+                    let userItems = [];
+                    let userMessage = "";
+                    querySnapshot.forEach((doc) => {
+                        const data = doc.data();
+                        userItems = data.items || []; // Assuming each user document has an `items` array
+                        userMessage = data.message || ""; // Assuming the message is stored as `message`
+                    });
+                    setItems(userItems);
+                    setMessageToSanta(userMessage);
+                },
+                (error) => {
+                    console.error("Error fetching user items: ", error);
+                }
+            );
 
             // Cleanup subscription on unmount
             return () => unsubscribe();
@@ -34,7 +43,7 @@ const ItemList = (props) => {
                 <ul>
                     {items.map((item, index) => (
                         <li key={index}>
-                            <strong>Item:</strong> {item.item}
+                            {item.item}
                             {item.link && item.link !== "" && (
                                 <>
                                     {' '}| <a href={item.link}>Link</a>
@@ -43,6 +52,14 @@ const ItemList = (props) => {
                         </li>
                     ))}
                 </ul>
+            )}
+
+            {/* Display the message to Santa */}
+            {messageToSanta && (
+                <div style={{ marginBottom: "20px", padding: "10px", border: "1px solid #ddd", borderRadius: "4px" }}>
+                    <strong>Lời nhắn hiện tại của bạn cho Santa:</strong>
+                    <p>{messageToSanta}</p>
+                </div>
             )}
         </div>
     );
