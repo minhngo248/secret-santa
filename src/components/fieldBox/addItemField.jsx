@@ -36,7 +36,7 @@ const AddItemField = (props) => {
             .then(() => {
                 setExtraFields([]); // Reset extra fields after submission
                 setMessageToSanta(""); // Clear message to Santa
-                alert("Add đồ thành công");
+                alert("Add thành công");
             })
             .catch((e) => alert(e));
     };

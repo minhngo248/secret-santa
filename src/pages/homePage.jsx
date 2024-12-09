@@ -4,8 +4,9 @@ import CenteredButtons from "../components/button/centeredButtons.jsx";
 import AddItemField from "../components/fieldBox/addItemField.jsx";
 import { auth } from "/src/config/firebaseConfig.js";
 import { getUserByEmail } from "../services/userService.js";
-import {logout} from "../services/authService.js";
+import { logout } from "../services/authService.js";
 import ItemList from "../components/user/itemList.jsx";
+import SantaItemList from "../components/user/santaItemList.jsx";
 
 const HomePage = () => {
     const [isAdmin, setIsAdmin] = useState(false); // Admin status
@@ -58,8 +59,14 @@ const HomePage = () => {
                             Logout
                         </button>
                     </div>
-                    <AddItemField currentUser={user} />
-                    <ItemList currentUser={user} />
+                    {user.receiverMail ? (
+                        <SantaItemList currentUser={user} />
+                    ) : (
+                        <>
+                            <AddItemField currentUser={user} />
+                            <ItemList currentUser={user} />
+                        </>
+                    )}
                 </>
             )}
             {isAdmin && (

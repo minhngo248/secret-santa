@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import {db} from "/src/config/firebaseConfig.js";
 import { collection, query, where, onSnapshot } from "firebase/firestore";
+import PropTypes from "prop-types";
 
 const ItemList = (props) => {
     const [items, setItems] = useState([]);
@@ -63,6 +64,10 @@ const ItemList = (props) => {
             )}
         </div>
     );
+};
+
+ItemList.propTypes = {
+    currentUser: PropTypes.object.isRequired,
 };
 
 export default ItemList;

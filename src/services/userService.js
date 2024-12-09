@@ -72,7 +72,8 @@ async function addUser(name, mail) {
         name: name,
         mail: mail,
         isAdmin: false,
-        items: []
+        items: [],
+        message: ""
     }
 
     return new Promise((resolve, reject) => {
@@ -122,25 +123,48 @@ async function updateUser(name, newItems, messageForSanta) {
     });
 }
 
-function getItemsByUserName(name) {
+// Function to get items by user email
+function getItemsByUserMail(mail) {
     return new Promise((resolve, reject) => {
         const usersRef = collection(db, "users");
-        const q = query(usersRef, where("name", "==", name));
+        const q = query(usersRef, where("mail", "==", mail));
 
         getDocs(q)
             .then((querySnapshot) => {
                 if (querySnapshot.empty) {
-                    reject("No user found with this username.");
-                } else {
-                    // Assuming username is unique, so only one document should be found
-                    querySnapshot.forEach((doc) => {
-                        const user = doc.data();
-                        resolve(user.items); // Resolve with the items array
-                    });
+                    return reject("No user found with this email.");
                 }
+
+                // Assuming email is unique, return the items from the first matched document
+                const userDoc = querySnapshot.docs[0];
+                const user = userDoc.data();
+                resolve(user.items);
             })
             .catch((error) => {
-                reject("Error getting user items: ", error);
+                reject("Error getting user items: " + error.message);
+            });
+    });
+}
+
+// Function to get messages by user email
+function getMessageByUserMail(mail) {
+    return new Promise((resolve, reject) => {
+        const usersRef = collection(db, "users");
+        const q = query(usersRef, where("mail", "==", mail));
+
+        getDocs(q)
+            .then((querySnapshot) => {
+                if (querySnapshot.empty) {
+                    return reject("No user found with this email.");
+                }
+
+                // Assuming email is unique, return the messages from the first matched document
+                const userDoc = querySnapshot.docs[0];
+                const user = userDoc.data();
+                resolve(user.message);
+            })
+            .catch((error) => {
+                reject("Error getting user message: " + error.message);
             });
     });
 }
@@ -148,5 +172,7 @@ function getItemsByUserName(name) {
 export {
     getUserByEmail,
     addUser,
-    updateUser
+    updateUser,
+    getItemsByUserMail,
+    getMessageByUserMail
 };
