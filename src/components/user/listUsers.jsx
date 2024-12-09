@@ -25,7 +25,7 @@ const ListUsers = () => {
         <ul>
             {users.map((user) => (
                 <li key={user.id}>
-                    <strong>{user.name}</strong> - {user.mail}
+                    {user.name}
                 </li>
             ))}
         </ul>
@@ -33,6 +33,7 @@ const ListUsers = () => {
 
     return (
         <div>
+            <h2>List người chơi</h2>
             {usersList}
         </div>
     );

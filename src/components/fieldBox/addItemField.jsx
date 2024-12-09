@@ -1,18 +1,10 @@
 import React, { useState } from "react";
-import {addUser} from "../../services/userService.js";
+import {updateUser} from "../../services/userService.js";
+import PropTypes from "prop-types";
 
-const AddUserField = () => {
-    const [formData, setFormData] = useState({
-        name: "",
-        mail: "",
-    });
+const AddItemField = (props) => {
 
     const [extraFields, setExtraFields] = useState([]); // List of additional fields
-
-    const handleChange = (e) => {
-        const { name, value } = e.target;
-        setFormData({ ...formData, [name]: value });
-    };
 
     const handleExtraFieldChange = (index, field, value) => {
         const updatedFields = [...extraFields];
@@ -34,15 +26,15 @@ const AddUserField = () => {
 
     const handleSubmit = (e) => {
         e.preventDefault();
-        // You can add your logic here, e.g., sending data to a server
-        addUser(formData.name, formData.mail, extraFields)
+        const isConfirmed = window.confirm("Chắc chưa ace ?");
+        if (!isConfirmed) {
+            return; // Stop submission if the user clicks "Cancel"
+        }
+
+        updateUser(props.currentUser.name, extraFields)
             .then(r => {
-                alert("User " + r + " added successfully");
-                setFormData({
-                    name: "",
-                    mail: "",
-                });
                 setExtraFields([]); // Reset extra fields after submission
+                alert("Add đồ thành công");
             })
             .catch(e => alert(e));
     };
@@ -57,54 +49,19 @@ const AddUserField = () => {
                 maxWidth: "400px",
                 margin: "20px auto",
                 boxShadow: "0 4px 8px rgba(0,0,0,0.1)",
+                textAlign: "center",
             }}
         >
-            <h2>Simple Form</h2>
+            <h2 style={{ color: "#007BFF" }}>Merry Christmas!</h2>
+
+            <h2>Wish List</h2>
             <form onSubmit={handleSubmit}>
-                <div style={{ marginBottom: "10px" }}>
-                    <label htmlFor="name" style={{ display: "block", marginBottom: "5px" }}>
-                        Name:
-                    </label>
-                    <input
-                        type="text"
-                        id="name"
-                        name="name"
-                        value={formData.name}
-                        onChange={handleChange}
-                        placeholder="Enter your name"
-                        style={{
-                            width: "100%",
-                            padding: "8px",
-                            borderRadius: "4px",
-                            border: "1px solid #ccc",
-                        }}
-                    />
-                </div>
-                <div style={{ marginBottom: "10px" }}>
-                    <label htmlFor="mail" style={{ display: "block", marginBottom: "5px" }}>
-                        Mail:
-                    </label>
-                    <input
-                        type="email"
-                        id="mail"
-                        name="mail"
-                        value={formData.mail}
-                        onChange={handleChange}
-                        placeholder="Enter your email"
-                        style={{
-                            width: "100%",
-                            padding: "8px",
-                            borderRadius: "4px",
-                            border: "1px solid #ccc",
-                        }}
-                    />
-                </div>
                 {/* Render additional fields */}
                 {extraFields.map((field, index) => (
                     <div key={index} style={{ display: "flex", marginBottom: "10px", gap: "10px" }}>
                         <input
                             type="text"
-                            placeholder="Item"
+                            placeholder="Item name (required)"
                             value={field.item}
                             onChange={(e) =>
                                 handleExtraFieldChange(index, "item", e.target.value)
@@ -115,10 +72,11 @@ const AddUserField = () => {
                                 borderRadius: "4px",
                                 border: "1px solid #ccc",
                             }}
+                            required
                         />
                         <input
                             type="text"
-                            placeholder="Link"
+                            placeholder="Link (optional)"
                             value={field.link}
                             onChange={(e) =>
                                 handleExtraFieldChange(index, "link", e.target.value)
@@ -146,7 +104,7 @@ const AddUserField = () => {
                             cursor: "pointer",
                         }}
                     >
-                        + Add Field
+                        + Thêm đồ
                     </button>
                     <button
                         type="button"
@@ -160,7 +118,7 @@ const AddUserField = () => {
                             cursor: "pointer",
                         }}
                     >
-                        - Delete Field
+                        - Xóa đồ
                     </button>
                 </div>
                 <button
@@ -174,11 +132,15 @@ const AddUserField = () => {
                         cursor: "pointer",
                     }}
                 >
-                    Submit
+                    Chốt
                 </button>
             </form>
         </div>
     );
 };
 
-export default AddUserField;
+AddItemField.propTypes = {
+    currentUser: PropTypes.object.isRequired,
+};
+
+export default AddItemField;

@@ -1,4 +1,4 @@
-import { collection, query, getDocs, addDoc } from 'firebase/firestore';
+import { collection, query, where, getDocs, updateDoc, doc, addDoc } from "firebase/firestore";
 import { db } from '../config/firebaseConfig';
 
 function getUsers() {
@@ -23,31 +23,56 @@ function getUsers() {
     });
 }
 
-function addUser(name, mail, items) {
+function getUserByEmail(email) {
+    return new Promise((resolve, reject) => {
+        const usersRef = collection(db, "users");
+        const q = query(usersRef, where("mail", "==", email));
+        getDocs(q)
+            .then((querySnapshot) => {
+                if (querySnapshot.empty) {
+                    reject("No user found with this email.");
+                } else {
+                    querySnapshot.forEach((doc) => {
+                        resolve(doc.data());
+                    });
+                }
+            })
+            .catch((error) => {
+                reject("Error getting user: ", error);
+            });
+    });
+}
 
+async function addUser(name, mail) {
     // Validation: name is required
     if (!name) {
         return new Promise((resolve, reject) => {
-            reject('Validation failed: name is required');
+            reject("Cần tên");
+        });
+    }
+
+    const usersRef = collection(db, "users");
+    const q = query(usersRef, where("name", "==", name));
+    const querySnapshot = await getDocs(q);
+
+    // user exists
+    if (!querySnapshot.empty) {
+        return new Promise((resolve, reject) => {
+            reject("Tên đã tồn tại");
         });
     }
 
     if (!mail) {
         return new Promise((resolve, reject) => {
-            reject('Validation failed: mail is required');
-        })
-    }
-
-    if (items.length === 0) {
-        return new Promise((resolve, reject) => {
-            reject("You haven't added any items.");
-        })
+            reject("Cần mail");
+        });
     }
 
     const user = {
         name: name,
         mail: mail,
-        items: items
+        isAdmin: false,
+        items: []
     }
 
     return new Promise((resolve, reject) => {
@@ -61,7 +86,68 @@ function addUser(name, mail, items) {
     });
 }
 
+async function updateUser(name, newItems) {
+    // Validate inputs
+    if (!name) {
+        return Promise.reject("Name is required to find the user.");
+    }
+
+    const usersRef = collection(db, "users");
+    const q = query(usersRef, where("name", "==", name));
+    const querySnapshot = await getDocs(q);
+
+    if (querySnapshot.empty) {
+        return Promise.reject(`No user found with the name "${name}".`);
+    }
+
+    if (newItems.length === 0) {
+        return Promise.reject("You must provide at least one item.");
+    }
+
+    for (const item of newItems) {
+        if (!item.item) {
+            return Promise.reject("Found an item with an empty item name.");
+        }
+    }
+
+    const userDoc = querySnapshot.docs[0]; // Get the first document
+    const userRef = doc(db, "users", userDoc.id);
+
+    return new Promise(async (resolve, reject) => {
+            // Update the user's mail and items
+            updateDoc(userRef, {
+                items: newItems,
+            })
+                .then(() => resolve())
+                .catch(err => reject(err));
+    });
+}
+
+function getItemsByUserName(name) {
+    return new Promise((resolve, reject) => {
+        const usersRef = collection(db, "users");
+        const q = query(usersRef, where("name", "==", name));
+
+        getDocs(q)
+            .then((querySnapshot) => {
+                if (querySnapshot.empty) {
+                    reject("No user found with this username.");
+                } else {
+                    // Assuming username is unique, so only one document should be found
+                    querySnapshot.forEach((doc) => {
+                        const user = doc.data();
+                        resolve(user.items); // Resolve with the items array
+                    });
+                }
+            })
+            .catch((error) => {
+                reject("Error getting user items: ", error);
+            });
+    });
+}
+
 export {
-    getUsers,
-    addUser
+    getUserByEmail,
+    addUser,
+    updateUser
 };
