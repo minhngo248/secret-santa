@@ -10,6 +10,8 @@ export const signup = (email, password) => {
                 // Signed in
                 const user = userCredential.user;
                 console.log(user);
+                // sign out
+                signOut(auth);
                 resolve(user);  // Resolve the promise with the user object
             })
             .catch((error) => {
