@@ -18,10 +18,9 @@ const HomePage = () => {
                 let userToAdd = await getUserByEmail(currentUser.email);
                 setUser(userToAdd); // Set user
 
-                // Assuming the user object has a `role` property to determine if they're an admin
+                // Assuming the user object has a `isAdmin` property to determine if they're an admin
                 // You can replace this with your actual admin-check logic
-                const userIsAdmin = userToAdd?.role === 'admin';
-                setIsAdmin(userIsAdmin);
+                setIsAdmin(userToAdd?.isAdmin);
             } else {
                 setUser(null);
                 setIsAdmin(false);
