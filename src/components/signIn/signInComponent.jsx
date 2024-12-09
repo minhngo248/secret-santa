@@ -18,10 +18,9 @@ const SignInComponent = () => {
 
         login(email, password)
             .then((response) => {
-                console.log("response", response);
+                console.log("response");
             })
             .catch((error) => {
-                alert(error);
                 setError("Invalid email or password.");
             });
     };

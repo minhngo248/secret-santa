@@ -7,6 +7,7 @@ import { Fragment } from 'react';
 import HomePage from "/src/pages/homePage.jsx";
 import MerryChristmasImage from "./assets/merry_christmas.png";
 import ListUsers from "./components/user/listUsers.jsx";
+import NotFound from "./pages/notFound.jsx";
 
 function App() {
     useLocation();
@@ -20,9 +21,15 @@ function App() {
                 />
             </div>
             <Routes>
-                <Route path="/" element={<HomePage/>}/>
+                <Route path="/" element={
+                    <>
+                        <HomePage/>
+                        <ListUsers />
+                    </>
+                }/>
+                <Route path="*" element={<NotFound />} />
             </Routes>
-            <ListUsers />
+
         </Fragment>
     );
 }

@@ -9,15 +9,11 @@ export const signup = (email, password) => {
             .then((userCredential) => {
                 // Signed in
                 const user = userCredential.user;
-                console.log(user);
                 // sign out
                 signOut(auth);
                 resolve(user);  // Resolve the promise with the user object
             })
             .catch((error) => {
-                const errorCode = error.code;
-                const errorMessage = error.message;
-                console.log(errorCode, errorMessage);
                 reject(error);  // Reject the promise with the error object
             });
     });
@@ -32,9 +28,6 @@ export const login = (email, password) => {
                 resolve(user);  // Resolve the promise with the user object
             })
             .catch((error) => {
-                const errorCode = error.code;
-                const errorMessage = error.message;
-                console.log(errorCode, errorMessage);
                 reject(error);  // Reject the promise with the error object
             });
     });

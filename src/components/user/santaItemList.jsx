@@ -1,43 +1,63 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState } from "react";
 import PropTypes from "prop-types";
-import {getItemsByUserMail, getMessageByUserMail} from "../../services/userService.js";
+import { getUserByEmail } from "../../services/userService.js";
 
 const SantaItemList = (props) => {
-    const [items, setItems] = useState([]);
-    const [message, setMessage] = useState(""); // State for the message to Santa
+    const [receiver, setReceiver] = useState(null);
+    const [loading, setLoading] = useState(true); // Track loading state
 
     useEffect(() => {
-        getItemsByUserMail(props.currentUser.receiverMail)
-            .then(r => setItems(r))
-            .catch(e => alert(e));
+        const fetchReceiver = async () => {
+            try {
+                let receiverToAdd = await getUserByEmail(props.currentUser.receiverMail);
+                setReceiver(receiverToAdd);
+            } catch (error) {
+                console.error("Error fetching receiver:", error);
+            } finally {
+                setLoading(false); // Stop loading once the fetch is complete
+            }
+        };
 
-        getMessageByUserMail(props.currentUser.receiverMail)
-            .then(r => setMessage(r))
-            .catch(e => alert(e));
-        }, []);
+        fetchReceiver();
+    }, [props.currentUser.receiverMail]);
+
+    if (loading) {
+        return <p>Loading...</p>; // Optionally display a loading state
+    }
+
+    if (!receiver) {
+        return <p>No receiver found.</p>; // Handle case where receiver is null
+    }
 
     return (
         <div>
-            <h3>Một trong những items X muốn Secret Santa tặng:</h3>
+            <h3>Một trong những items {receiver.name} muốn Secret Santa tặng:</h3>
 
             <ul>
-                {items.map((item, index) => (
+                {receiver.items.map((item, index) => (
                     <li key={index}>
                         {item.item}
                         {item.link && item.link !== "" && (
                             <>
-                                {' '}| <a href={item.link}>Link</a>
+                                {" "} | <a href={item.link}>Link</a>
                             </>
-                            )}
+                        )}
                     </li>
                 ))}
             </ul>
 
             {/* Display the message to Santa */}
-            {message && (
-                <div style={{ marginBottom: "20px", padding: "10px", border: "1px solid #ddd", borderRadius: "4px" }}>
-                    <strong>Lời nhắn của X dành cho Santa:</strong>
-                    <p>{message}</p>
+            {receiver.message && (
+                <div
+                    style={{
+                        marginBottom: "20px",
+                        padding: "10px",
+                        border: "1px solid #ddd",
+                        borderRadius: "4px",
+                    }}
+                >
+                    <strong>Lời nhắn của {receiver.name} dành cho Santa:</strong>
+                    <p>{receiver.message}</p>
                 </div>
             )}
         </div>

@@ -32,9 +32,9 @@ function getUserByEmail(email) {
                 if (querySnapshot.empty) {
                     reject("No user found with this email.");
                 } else {
-                    querySnapshot.forEach((doc) => {
-                        resolve(doc.data());
-                    });
+                    // Assuming email is unique, return the first document
+                    const userDoc = querySnapshot.docs[0];
+                    resolve(userDoc.data());
                 }
             })
             .catch((error) => {
@@ -123,56 +123,8 @@ async function updateUser(name, newItems, messageForSanta) {
     });
 }
 
-// Function to get items by user email
-function getItemsByUserMail(mail) {
-    return new Promise((resolve, reject) => {
-        const usersRef = collection(db, "users");
-        const q = query(usersRef, where("mail", "==", mail));
-
-        getDocs(q)
-            .then((querySnapshot) => {
-                if (querySnapshot.empty) {
-                    return reject("No user found with this email.");
-                }
-
-                // Assuming email is unique, return the items from the first matched document
-                const userDoc = querySnapshot.docs[0];
-                const user = userDoc.data();
-                resolve(user.items);
-            })
-            .catch((error) => {
-                reject("Error getting user items: " + error.message);
-            });
-    });
-}
-
-// Function to get messages by user email
-function getMessageByUserMail(mail) {
-    return new Promise((resolve, reject) => {
-        const usersRef = collection(db, "users");
-        const q = query(usersRef, where("mail", "==", mail));
-
-        getDocs(q)
-            .then((querySnapshot) => {
-                if (querySnapshot.empty) {
-                    return reject("No user found with this email.");
-                }
-
-                // Assuming email is unique, return the messages from the first matched document
-                const userDoc = querySnapshot.docs[0];
-                const user = userDoc.data();
-                resolve(user.message);
-            })
-            .catch((error) => {
-                reject("Error getting user message: " + error.message);
-            });
-    });
-}
-
 export {
     getUserByEmail,
     addUser,
-    updateUser,
-    getItemsByUserMail,
-    getMessageByUserMail
+    updateUser
 };
