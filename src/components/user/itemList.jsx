@@ -26,7 +26,7 @@ const ItemList = (props) => {
                     setMessageToSanta(userMessage);
                 },
                 (error) => {
-                    console.error("Error fetching user items: ", error);
+                    alert(error);
                 }
             );
 

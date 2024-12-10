@@ -12,7 +12,7 @@ const SantaItemList = (props) => {
                 let receiverToAdd = await getUserByEmail(props.currentUser.receiverMail);
                 setReceiver(receiverToAdd);
             } catch (error) {
-                console.error("Error fetching receiver:", error);
+                alert(error);
             } finally {
                 setLoading(false); // Stop loading once the fetch is complete
             }

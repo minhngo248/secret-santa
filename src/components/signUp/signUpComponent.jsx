@@ -19,10 +19,13 @@ const SignUpComponent = () => {
         }
         setError('');
 
-        signup(email, password)
+        signup(name, email, password)
             .then((response) => {
-                alert("Sign up successful!");
                 addUser(name, email);
+                alert("Sign up successful!");
+                setName('');
+                setEmail('');
+                setPassword('');
             })
             .catch((error) => {
                 alert(error);

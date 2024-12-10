@@ -34,9 +34,9 @@ const AddItemField = (props) => {
 
         updateUser(props.currentUser.name, extraFields, messageToSanta)
             .then(() => {
+                alert("Add thành công");
                 setExtraFields([]); // Reset extra fields after submission
                 setMessageToSanta(""); // Clear message to Santa
-                alert("Add thành công");
             })
             .catch((e) => alert(e));
     };
