@@ -39,7 +39,7 @@ const SantaItemList = (props) => {
                         {item.item}
                         {item.link && item.link !== "" && (
                             <>
-                                {" "} | <a href={item.link}>Link</a>
+                                {" "} | <a href={item.link} target="_blank">Link</a>
                             </>
                         )}
                     </li>
