@@ -1,0 +1,1 @@
+export const TOKEN_EXPIRATION_TIME = 3600000 // 1 hour = 3600000 milliseconds

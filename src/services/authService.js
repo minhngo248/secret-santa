@@ -3,6 +3,8 @@ import {signInWithEmailAndPassword,
     createUserWithEmailAndPassword,
     signOut} from "firebase/auth";
 import {auth, db} from "/src/config/firebaseConfig";
+import startSessionTimer from "../utils/startSessionTimer.js";
+import {TOKEN_EXPIRATION_TIME} from "../utils/constants.js";
 
 export const signup = async (name, email, password) => {
     // Validation: name is required
@@ -57,6 +59,8 @@ export const login = (email, password) => {
         signInWithEmailAndPassword(auth, email, password)
             .then((userCredential) => {
                 // Signed in
+                // Set session expiration
+                startSessionTimer(TOKEN_EXPIRATION_TIME);
                 const user = userCredential.user;
                 resolve(user);  // Resolve the promise with the user object
             })
