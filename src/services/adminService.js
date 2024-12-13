@@ -8,13 +8,21 @@ export async function assignSecretSantas() {
     const querySnapshot = await getDocs(q);
 
     const users = [];
+    const usersWithoutItems = [];
 
     for (const doc of querySnapshot.docs) {
         const userData = doc.data();
         if (!userData.items || userData.items.length < 1) {
-            return Promise.reject(`User ${userData.name} must have at least 1 item.`);
+            usersWithoutItems.push(userData.name); // Collect users without items
+        } else {
+            users.push({ id: doc.id, mail: userData.mail }); // Add valid users to the list
         }
-        users.push({ id: doc.id, mail: userData.mail });
+    }
+
+    if (usersWithoutItems.length > 0) {
+        return Promise.reject(
+            `The following users must have at least 1 item: ${usersWithoutItems.join(", ")}.`
+        );
     }
 
     // Validate the number of users
